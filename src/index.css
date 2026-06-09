@@ -1,0 +1,186 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Chalkboard palette (dark default) */
+  --app-bg: 30 45 40;
+  --app-surface: 37 53 48;
+  --app-elevated: 44 62 56;
+  --app-text: 235 230 222;
+  --app-text-secondary: 180 175 168;
+  --app-text-muted: 130 126 120;
+  --app-border: 68 82 76;
+  /* Chalk accent colors */
+  --chalk-yellow: #f0d060;
+  --chalk-yellow-rgb: 240 208 96;
+  --chalk-pink: #f0a0b0;
+  --chalk-pink-rgb: 240 160 176;
+  --chalk-blue: #90c0f0;
+  --chalk-blue-rgb: 144 192 240;
+  --chalk-green: #90d090;
+  --chalk-green-rgb: 144 208 144;
+  --chalk-white: #e8e4df;
+  /* Typography */
+  --font-display: 'Lora', 'Georgia', 'Times New Roman', serif;
+  --font-hand: 'Caveat', 'Segoe Script', cursive;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-body: 'Lora', 'Georgia', serif;
+  /* Effects */
+  --chalk-glow: 0 0 2px rgba(232, 228, 223, 0.3);
+  --chalk-rough: 0 1px 0 rgba(200, 195, 188, 0.15);
+  --chalk-ambient: 0 0 12px rgba(200, 195, 188, 0.04);
+}
+
+[data-theme="light"] {
+  --app-bg: 250 247 238;
+  --app-surface: 255 254 250;
+  --app-elevated: 248 245 235;
+  --app-text: 40 30 20;
+  --app-text-secondary: 90 70 55;
+  --app-text-muted: 140 125 110;
+  --app-border: 210 205 190;
+  --chalk-yellow: #3a1e00;
+  --chalk-yellow-rgb: 58 30 0;
+  --chalk-pink: #c05050;
+  --chalk-pink-rgb: 192 80 80;
+  --chalk-blue: #3060b0;
+  --chalk-blue-rgb: 48 96 176;
+  --chalk-green: #308050;
+  --chalk-green-rgb: 48 128 80;
+  --chalk-white: #fffef8;
+  --chalk-glow: none;
+  --chalk-rough: none;
+  --chalk-ambient: none;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: rgb(var(--app-bg));
+}
+
+body {
+  font-family: var(--font-body);
+  background: rgb(var(--app-bg));
+  color: rgb(var(--app-text));
+}
+
+/* ── Chalk dust texture ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+[data-theme="light"] body::before {
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ── Notebook ruled lines (light theme) ── */
+[data-theme="light"] body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+  opacity: 0.12;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 23px, rgba(140, 160, 190, 0.4) 24px);
+}
+
+/* ── Chalk smudge vignette (dark theme) ── */
+.phone-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.3;
+  background: radial-gradient(ellipse at 50% 30%, rgba(60, 100, 80, 0.2) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 80%, rgba(50, 50, 40, 0.15) 0%, transparent 50%);
+}
+[data-theme="light"] .phone-frame::before {
+  display: none;
+}
+
+/* Hide scrollbar */
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ── Phone frame ── */
+.phone-frame {
+  max-width: 430px;
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  background: rgb(var(--app-bg));
+}
+
+/* ── Frosted glass card ── */
+.glass-card {
+  background: rgb(var(--app-surface) / 0.75);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgb(var(--app-border));
+}
+[data-theme="dark"] .glass-card {
+  box-shadow: 0 0 1px rgba(200, 195, 188, 0.08), var(--chalk-ambient);
+}
+[data-theme="light"] .glass-card {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.02);
+}
+
+/* ── Chalk accent utilities ── */
+.glow-chalk-yellow {
+  box-shadow: 0 0 8px rgba(240, 208, 96, 0.2), 0 0 2px rgba(240, 208, 96, 0.1);
+}
+
+/* ── Typing dots ── */
+@keyframes pulse-dot {
+  0%, 80%, 100% { transform: scale(0.4); opacity: 0.2; }
+  40% { transform: scale(1); opacity: 0.9; }
+}
+.typing-dot {
+  animation: pulse-dot 1.4s infinite ease-in-out both;
+  background: var(--chalk-yellow);
+}
+.typing-dot:nth-child(1) { animation-delay: -0.32s; }
+.typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+/* ── Active nav indicator pulse ── */
+@keyframes chalk-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* ── Light theme: override Tailwind gray utilities ── */
+[data-theme="light"] .bg-gray-950,
+[data-theme="light"] .bg-gray-900,
+[data-theme="light"] .bg-gray-900\/30,
+[data-theme="light"] .bg-gray-900\/80 { background-color: #e6e3d8; }
+[data-theme="light"] .bg-gray-800,
+[data-theme="light"] .bg-gray-800\/30,
+[data-theme="light"] .bg-gray-800\/80 { background-color: #dedbd0; }
+[data-theme="light"] .bg-gray-700,
+[data-theme="light"] .bg-gray-700\/50 { background-color: #d4d1c4; }
+[data-theme="light"] .text-gray-600 { color: #8a8270; }
+[data-theme="light"] .text-gray-500 { color: #706850; }
+[data-theme="light"] .text-gray-400 { color: #605840; }
+[data-theme="light"] .text-gray-300 { color: #403820; }
+
