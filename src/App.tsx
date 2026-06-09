@@ -9,14 +9,18 @@ import { useAIAssistant } from './hooks/useAIAssistant';
 import { mockVideos } from './data/videos';
 import { Video, Roadmap, TabId } from './types';
 
-type Theme = 'dark' | 'light';
+type Theme = 'dark' | 'light' | 'auto';
 
 function getStoredTheme(): Theme {
   try {
     const stored = localStorage.getItem('shortmath-theme');
-    if (stored === 'light' || stored === 'dark') return stored;
+    if (stored === 'light' || stored === 'dark' || stored === 'auto') return stored;
   } catch {}
-  return 'dark';
+  return 'auto';
+}
+
+function getSystemTheme(): 'dark' | 'light' {
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
 export default function App() {
@@ -30,15 +34,24 @@ export default function App() {
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
   const [theme, setTheme] = useState<Theme>(getStoredTheme);
 
-  // Sync theme to DOM and localStorage
+  // Resolve auto → actual theme, listen for system changes
+  const resolvedTheme = theme === 'auto' ? getSystemTheme() : theme;
+
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    try { localStorage.setItem('shortmath-theme', theme); } catch {}
+    if (theme !== 'auto') return;
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const onChange = () => {
+      document.documentElement.setAttribute('data-theme', getSystemTheme());
+    };
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
   }, [theme]);
 
-  const toggleTheme = useCallback(() => {
-    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
-  }, []);
+  // Sync theme to DOM and localStorage
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', resolvedTheme);
+    try { localStorage.setItem('shortmath-theme', theme); } catch {}
+  }, [theme, resolvedTheme]);
 
   const { messages, isThinking, sendMessage, clearChat } = useAIAssistant();
 
@@ -286,7 +299,7 @@ export default function App() {
               onClearRoadmaps={handleClearRoadmaps}
               onClearAll={handleClearAll}
               theme={theme}
-              onToggleTheme={toggleTheme}
+              onSetTheme={setTheme}
             />
           )}
         </div>

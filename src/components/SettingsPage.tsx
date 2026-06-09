@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+type Theme = 'dark' | 'light' | 'auto';
+
 interface SettingsPageProps {
   volume: number;
   isMuted: boolean;
@@ -10,9 +12,15 @@ interface SettingsPageProps {
   onClearVideos: () => void;
   onClearRoadmaps: () => void;
   onClearAll: () => void;
-  theme: 'dark' | 'light';
-  onToggleTheme: () => void;
+  theme: Theme;
+  onSetTheme: (t: Theme) => void;
 }
+
+const THEME_LABELS: Record<Theme, string> = {
+  dark: 'Dark',
+  light: 'Light',
+  auto: 'Automatic',
+};
 
 function DangerButton({ label, description, onClick }: { label: string; description: string; onClick: () => void }) {
   const [confirming, setConfirming] = useState(false);
@@ -58,7 +66,7 @@ export default function SettingsPage({
   onClearRoadmaps,
   onClearAll,
   theme,
-  onToggleTheme,
+  onSetTheme,
 }: SettingsPageProps) {
   return (
     <div className="flex flex-col h-full bg-app-bg pb-14">
@@ -76,22 +84,16 @@ export default function SettingsPage({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-app-text font-medium">Theme</p>
-                <p className="text-[10px] text-app-text-muted font-light">
-                  {theme === 'dark' ? 'Dark mode' : 'Light mode'}
-                </p>
               </div>
-              <button
-                onClick={onToggleTheme}
-                className={`relative w-14 h-7 rounded-full transition-colors duration-300 ${
-                  theme === 'light' ? 'bg-chalk-yellow' : 'bg-gray-700'
-                }`}
+              <select
+                value={theme}
+                onChange={(e) => onSetTheme(e.target.value as Theme)}
+                className="text-sm font-medium bg-app-elevated text-app-text border border-app-border rounded-lg px-3 py-2 outline-none focus:border-chalk-yellow cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%3E%3Cpath%20d%3D%22M3%205l3%203%203-3%22%20stroke%3D%22%23888%22%20stroke-width%3D%221.5%22%20fill%3D%22none%22%2F%3E%3C/svg%3E')] bg-no-repeat bg-[right_0.5rem_center] pr-8"
               >
-                <span
-                  className={`absolute top-0.5 w-6 h-6 rounded-full bg-white shadow transition-all duration-300 ${
-                    theme === 'light' ? 'left-7' : 'left-0.5'
-                  }`}
-                />
-              </button>
+                {(Object.keys(THEME_LABELS) as Theme[]).map((t) => (
+                  <option key={t} value={t}>{THEME_LABELS[t]}</option>
+                ))}
+              </select>
             </div>
           </div>
         </section>
